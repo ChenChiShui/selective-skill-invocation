@@ -1,0 +1,25 @@
+project_root: /path/to/selective-skill-invocation
+
+# model paths
+models:
+  rl_init: /path/to/rl-init-model
+  base: /path/to/base-model
+
+# data paths
+data:
+  alfworld: /path/to/alfworld-data
+  bfcl: /path/to/bfcl-data
+
+# output paths
+output:
+  dpo_data: ${project_root}/data/dpo
+  eval: ${project_root}/eval_results
+  models: ${project_root}/checkpoints
+
+# vllm inference server
+vllm:
+  url: http://localhost:8000/v1
+  model_name: Qwen3-8B
+
+# conda env
+python: /path/to/conda/envs/your-env/bin/python3
