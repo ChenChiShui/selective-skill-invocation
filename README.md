@@ -84,7 +84,7 @@ SelSkill uses iterative preference training (3 rounds for ALFWorld, 2 for BFCL).
 2. **Episode-level rollouts** — `selskill/scripts/rollout.py`, K=10 per task
 3. **Step-level rollouts** — `selskill/scripts/entropy_passK_rollout.py`, entropy-guided branching K=4
 4. **Build preference pairs** — `selskill/scripts/build_dpo_pairs.py`, merges episode + step-level pairs
-5. **DPO training** — `train/run_training.sh`, 8× A100, ~2.7h per round for 8B
+5. **DPO training** — `train/run_training.sh`
 
 Repeat steps 2–5 with the updated checkpoint each round.
 
@@ -112,11 +112,3 @@ Skill call format used by the model:
 <tool_call>{"name": "heat_object"}</tool_call>
 ```
 
-**Total 49 skills across all benchmarks:**
-
-| Benchmark | Count | Type | Role |
-|-----------|-------|------|------|
-| `selskill/skills/` | 13 total (10 user-invocable: 4 executable + 6 memory) | ALFWorld | Train + eval |
-| `bfcl/skills/` | 18 (8 executable + 10 memory) | BFCL | Train + eval |
-| `tau_bench/skills/` + `skills_retail/` | 11 + 6 | Tau-bench | OOD eval |
-| `popqa/skills/` | 4 (memory) | PopQA | OOD eval |
