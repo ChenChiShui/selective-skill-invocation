@@ -16,7 +16,7 @@ Install dependencies from `requirements.txt`. Additional requirements:
 
 - **ALFWorld**: install from [source](https://github.com/alfworld/alfworld)
 - **BFCL evaluation**: install from [Berkeley Function Calling Leaderboard](https://github.com/ShishirPatil/gorilla/tree/main/berkeley-function-call-leaderboard)
-- **verl** (DPO training only): install from [verl](https://github.com/volcengine/verl) source
+- **verl** install from [verl](https://github.com/volcengine/verl) source
 - **Models**: download [Qwen3-8B](https://huggingface.co/Qwen/Qwen3-8B), [Qwen3-4B](https://huggingface.co/Qwen/Qwen3-4B), or [Qwen3-14B](https://huggingface.co/Qwen/Qwen3-14B) from HuggingFace
 
 ## Repository Structure
