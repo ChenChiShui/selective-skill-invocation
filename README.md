@@ -78,48 +78,15 @@ python selskill/scripts/eval.py \
 
 ## Training Pipeline
 
-SelSkill uses iterative preference training. Each round collects new rollouts from the current model, builds preference pairs, and runs one DPO update. We use 3 rounds for ALFWorld and 2 for BFCL.
+SelSkill uses iterative preference training (3 rounds for ALFWorld, 2 for BFCL). Each round:
 
-**Step 1: RL-Init** — train a no-skill base policy using GRPO (e.g., via [verl](https://github.com/volcengine/verl)).
+1. **RL-Init** — train a no-skill base policy via GRPO ([verl](https://github.com/volcengine/verl))
+2. **Episode-level rollouts** — `selskill/scripts/rollout.py`, K=10 per task
+3. **Step-level rollouts** — `selskill/scripts/entropy_passK_rollout.py`, entropy-guided branching K=4
+4. **Build preference pairs** — `selskill/scripts/build_dpo_pairs.py`, merges episode + step-level pairs
+5. **DPO training** — `train/run_training.sh`, 8× A100, ~2.7h per round for 8B
 
-**Step 2: Episode-level rollouts** (K=10 trajectories per task)
-```bash
-python selskill/scripts/rollout.py \
-  --model-path /path/to/rl-init --skills-dir selskill/skills \
-  --alfworld-data $ALFWORLD_DATA --config configs/alfworld_config.yaml \
-  --n-episodes 200 --n-rollouts 10 --output-dir data/rollouts/r1_episode
-```
-
-**Step 3: Step-level rollouts** (entropy-guided branching, K=4 per branch)
-```bash
-python selskill/scripts/entropy_passK_rollout.py \
-  --model-path /path/to/rl-init --tokenizer-path /path/to/tokenizer \
-  --skills-dir selskill/skills --alfworld-data $ALFWORLD_DATA \
-  --config configs/alfworld_config.yaml \
-  --n-games 200 --n-rollouts 4 --output-dir data/rollouts/r1_entropy
-```
-
-**Step 4: Build preference pairs** (episode + step-level, mixed with local loss mask n=3)
-```bash
-python selskill/scripts/build_dpo_pairs.py \
-  --traj-dirs data/rollouts/r1_episode \
-  --entropy-dirs data/rollouts/r1_entropy \
-  --output data/dpo/r1_mixed.parquet
-```
-
-**Step 5: DPO training** (8× A100, ~2.7h per round for 8B)
-
-First, copy the modified trainer files into your verl installation:
-```bash
-cp train/fsdp_dpo_trainer.py /path/to/verl/verl/trainer/fsdp_dpo_trainer.py
-cp train/dataset.py /path/to/verl/verl/utils/dataset/dpo_dataset.py
-```
-Then run training:
-```bash
-bash train/run_training.sh /path/to/rl-init data/dpo/r1_mixed.parquet checkpoints/selskill_r1
-```
-
-Repeat steps 2–5 with `selskill_r1` as the new base model for Round 2, and so on.
+Repeat steps 2–5 with the updated checkpoint each round.
 
 ## Skill Library
 
@@ -129,7 +96,7 @@ Each skill is a `.md` file with YAML frontmatter specifying its metadata and ful
 ---
 description: Heat the held object in the microwave
 when-to-use: When the task requires a heated object and the agent is holding it
-execution-mode: 可执行 skill    # or: memory
+execution-mode: executable    # or: memory
 user-invocable: true
 ---
 
@@ -153,6 +120,3 @@ Skill call format used by the model:
 | `bfcl/skills/` | 18 (8 executable + 10 memory) | BFCL | Train + eval |
 | `tau_bench/skills/` + `skills_retail/` | 11 + 6 | Tau-bench | OOD eval |
 | `popqa/skills/` | 4 (memory) | PopQA | OOD eval |
-
-
-```
