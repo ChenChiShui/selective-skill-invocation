@@ -3,13 +3,11 @@
 Agent skills are callable procedural modules that provide reusable knowledge and execution policies for complex tasks. While prior work focuses on selecting *which* skill to use, we study a more fundamental question: **should a relevant skill actually be invoked at the current decision point?**
 
 <p align="center">
-  <img src="figures/motivation.png" alt="Motivation" width="420" /><br/>
-  <em>Figure 1: Motivation — when should a skill be invoked vs. skipped?</em>
+  <img src="figures/motivation.png" alt="Motivation" width="420" />
 </p>
 
 <p align="center">
-  <img src="figures/pipeline.png" alt="Pipeline" width="420" /><br/>
-  <em>Figure 2: Training pipeline overview for selective skill invocation.</em>
+  <img src="figures/pipeline.png" alt="Pipeline" width="420" />
 </p>
 
 ## Setup
